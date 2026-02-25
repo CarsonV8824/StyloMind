@@ -1,1 +1,1 @@
-[[('My', 'PRON'), ('Name', 'NOUN'), ('is', 'AUX'), ('Carson', 'PROPN'), ('and', 'CCONJ'), ('I', 'PRON'), ('like', 'VERB'), ('python', 'NOUN'), ('.', 'PUNCT')], [('Do', 'VERB'), ('you', 'PRON'), ('?', 'PUNCT')]]
+[[('My', 'PRON'), ('name', 'NOUN'), ('is', 'AUX'), ('Carson', 'PROPN'), ('.', 'PUNCT')], [('Learning', 'VERB'), ('python', 'NOUN'), ('at', 'ADP'), ('STA', 'PROPN'), (',', 'PUNCT'), ('I', 'PRON'), ('have', 'AUX'), ('gained', 'VERB'), ('massive', 'ADJ'), ('kowledge', 'NOUN'), ('.', 'PUNCT')]]
