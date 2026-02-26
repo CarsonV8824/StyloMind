@@ -1,7 +1,9 @@
 import spacy
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.linear_model import LinearRegression
+from collections import Counter
+from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+
+from typing import Any
 
 def make_text_into_sentences_with_part_of_speech(text: str) -> list[list[tuple[str, str, str]]]:
     """Returns text with each sentence in its own list and each word with its part of speech."""
@@ -17,32 +19,26 @@ def make_text_into_sentences_with_part_of_speech(text: str) -> list[list[tuple[s
 
     return list_of_sentences
 
-def convert_data_from_str_to_data(sentence_struct: list[list[tuple[str, str, str]]]) -> tuple:
-    """Converts the data into a matrix of numbers so ML can understand data"""
-    # rows like [POS, DEP] per token
-    pos_dep_pairs = [[pos, dep] for sentence in sentence_struct for _, pos, dep in sentence]
-    categorical_feature = np.array(pos_dep_pairs, dtype=object)
+def structure_vector(text: str):
+    sents = make_text_into_sentences_with_part_of_speech(text)
+    tags = [f"{pos}:{dep}" for sent in sents for _, pos, dep in sent]
+    return Counter(tags)
 
-    try:
-        encoder = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
-    except TypeError:
-        encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
+def structure_similarity(text1: str, text2: str) -> float:
+    c1 = structure_vector(text1)
+    c2 = structure_vector(text2)
 
-    encoded_feature = encoder.fit_transform(categorical_feature)
+    keys = sorted(set(c1) | set(c2))
+    v1 = np.array([c1[k] for k in keys], dtype=float).reshape(1, -1)
+    v2 = np.array([c2[k] for k in keys], dtype=float).reshape(1, -1)
 
-    print("Categories:", encoder.categories_)  # [POS categories, DEP categories]
-    print("Feature names:", encoder.get_feature_names_out(["pos", "dep"]))
-    print("OneHotEncoded feature:\n", encoded_feature)
-    return encoded_feature, encoder
-
-def train_model(data):
-    """trains the model"""
-    X, encoder = convert_data_from_str_to_data()
-    log_reg = LinearRegression(max_iter=200)
-    log_reg.fit(X)
+    return float(cosine_similarity(v1, v2)[0][0]) 
 
 if __name__ == "__main__":
-    text = """My name is Carson. Learning python at STA, I have gained massive knowledge."""
-    data = make_text_into_sentences_with_part_of_speech(text)
-    convert_data_from_str_to_data(data)
+    a = "My name is Carson. I am learning Python. Studing Python, Carson also enjoys Music"
+    b = "Her name is Maya. She is studying Java."
+    score = structure_similarity(a, b)
+    print("Structure similarity:", score, "=>", round(score * 100, 2), "%")
+
+
     
