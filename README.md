@@ -11,7 +11,6 @@ Do not use Python `3.14+` for this project yet. spaCy currently relies on `pydan
 ## Setup (Windows PowerShell)
 
 ```powershell
-# from c:\Users\cvann\OneDrive\Documents\GitHub\StyloMind
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
