@@ -4,8 +4,21 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from typing import Any
 
-NLP = spacy.load("en_core_web_sm")
+NLP = None
 
+
+def _get_nlp():
+    global NLP
+    if NLP is None:
+        try:
+            # NER is not used by the current feature set, so disable it for faster load.
+            NLP = spacy.load("en_core_web_sm", disable=["ner"])
+        except OSError as exc:
+            raise RuntimeError(
+                "spaCy model 'en_core_web_sm' is not installed. "
+                "Run: python -m spacy download en_core_web_sm"
+            ) from exc
+    return NLP
 
 def read_text_file(path: str) -> str:
     """Read text robustly across common encodings on Windows."""
@@ -19,17 +32,9 @@ def read_text_file(path: str) -> str:
     with open(path, "r", encoding="utf-8", errors="replace") as f:
         return f.read()
 
-def get_title(text:str) -> str:
-    """get the title of the text"""
-    doc = NLP(text)
-    for sent in doc.sents:
-        for token in sent:
-            if token.is_title:
-                return token.text
-
 def make_text_into_sentences_with_part_of_speech(text: str) -> list[list[dict[str, Any]]]:
     """Return sentence-token data with POS/dependency plus style-relevant token features."""
-    doc = NLP(text)
+    doc = _get_nlp()(text)
     list_of_sentences = []
 
     for sent in doc.sents:

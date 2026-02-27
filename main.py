@@ -4,17 +4,33 @@ from PySide6.QtGui import Qt
 
 from ui.main_window import MainWindow
 
-def main():
-    # 1. Create the application instance
-    app = QApplication(sys.argv)
+from pathlib import Path
+import sys, os, json
 
-    # 2. Create the main window instance
+def get_resource_path(relative_path):
+    """Get the absolute path to a resource, compatible with PyInstaller."""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
+
+def load_stylesheet(app: QApplication) -> None:
+    style_path = Path(get_resource_path("assets/styles.css"))
+    if style_path.exists():
+        app.setStyleSheet(style_path.read_text(encoding="utf-8"))
+
+def main():
+    
+    app = QApplication(sys.argv)
+    load_stylesheet(app)
+    
     window = MainWindow()
     
-    # 3. Show the window
     window.show()
 
-    # 4. Start the application event loop
     sys.exit(app.exec())
 
 if __name__ == "__main__":

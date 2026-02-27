@@ -1,6 +1,7 @@
 # ui/widgets/button_container.py
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
+from PySide6.QtCore import Qt
 
 class ButtonContainer(QWidget):
     go_to_page = Signal(int)  # sends page index
@@ -8,7 +9,9 @@ class ButtonContainer(QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout(self)
-
+        self.setObjectName("button_container")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        layout.setContentsMargins(12, 12, 12, 12)
         btn1 = QPushButton("Upload your Text")
         btn2 = QPushButton("Style and Structure")
         btn3 = QPushButton("Stats of a Text")

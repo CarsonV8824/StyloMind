@@ -6,6 +6,8 @@ from ui.pages.upload_page import UploadPage
 
 from ui.pages.style_structure_page import StyleStructurePage
 
+from ui.pages.one_var_stats_page import OneVarStatsPage
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -24,10 +26,13 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.upload_page)
 
         self.data_manager_page = StyleStructurePage()
-
         self.stack.addWidget(self.data_manager_page)
+
+        self.stats_page = OneVarStatsPage()
+        self.stack.addWidget(self.stats_page)
 
         # signals
 
         self.upload_page.send_text.connect(self.data_manager_page.set_text)
+        self.upload_page.send_text.connect(self.stats_page.set_text)
         self.buttons.go_to_page.connect(self.stack.setCurrentIndex)

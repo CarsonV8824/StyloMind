@@ -36,8 +36,10 @@ class StyleStructurePage(QWidget):
         self.second_text_box.addItem(text[1], userData=text[0])
 
     def find_struct_and_style(self):
-        first_text = self.first_text_box.currentText()
-        second_text = self.second_text_box.currentText()
+        first_text = self.first_text_box.currentData()
+        second_text = self.second_text_box.currentData()
+        print("from find_struct_and_style: ", first_text[:10])
+        print("from find_struct_and_style: ", second_text[:10])
 
         percentage_structure = textTraining.structure_similarity(first_text, second_text)
         percentage_style = textTraining.style_similarity(first_text, second_text)
