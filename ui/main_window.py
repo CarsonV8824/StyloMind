@@ -6,7 +6,7 @@ from ui.pages.upload_page import UploadPage
 
 from ui.pages.style_structure_page import StyleStructurePage
 
-from ui.pages.one_var_stats_page import OneVarStatsPage
+from ui.pages.one_text_stats_page import OneTextStatsPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         self.data_manager_page = StyleStructurePage()
         self.stack.addWidget(self.data_manager_page)
 
-        self.stats_page = OneVarStatsPage()
+        self.stats_page = OneTextStatsPage()
         self.stack.addWidget(self.stats_page)
 
         # signals

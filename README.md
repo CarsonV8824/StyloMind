@@ -1,5 +1,25 @@
 # StyloMind
 
+## About
+
+StyloMind is an app that I made in order to help writers and Myself when Writing papers. First, You Import your paper on the upload page. The app can take .PDF, .TXT, and .DOCX files. Second, you then can compare your papers for simular structure and Style. I use machince learning which finds this percentage for me. Third, I have a stats page which gives you graphs of stats about your paper and stats comparing papers.
+
+## Libarys Used
+
+- Spacy: Used for NLP
+
+- Skilet-Learn: Used for Machine Learning
+
+- Seaborn: Used for the graphs
+
+- PySide6: Used to make the clean Desktop App GUI
+
+- Sqlite3: Used for the database
+
+## Goals of App
+
+I hope the app gives the user feedback and stats about thier paper, making the user being able to get feedback.
+
 ## Requirements
 
 - Python `3.12` or `3.13` (recommended)

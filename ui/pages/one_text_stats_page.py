@@ -1,11 +1,11 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QComboBox, QScrollArea, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QComboBox, QScrollArea, QSizePolicy, QMessageBox
 
 import services.learn as textTraining
 
 def _ratio(num: int, den: int) -> float:
     return (num / den) if den else 0.0
 
-class OneVarStatsPage(QWidget):
+class OneTextStatsPage(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -35,6 +35,10 @@ class OneVarStatsPage(QWidget):
         self.plot_dashboard()
 
     def _ensure_canvas(self):
+        chosen_text = self.choose_text_for_stats.currentData()
+        if not chosen_text:
+            QMessageBox.warning(self, "popup","No Text choosen")
+            return
         if self.figure is not None and self.canvas is not None:
             return
 
@@ -56,10 +60,7 @@ class OneVarStatsPage(QWidget):
         self.figure.clear()
 
         if not chosen_text:
-            ax = self.figure.add_subplot(111)
-            ax.text(0.5, 0.5, "No text selected", ha="center", va="center", transform=ax.transAxes)
-            ax.set_axis_off()
-            self.canvas.draw()
+            QMessageBox.warning(self, "popup","No Text choosen")
             return
 
         sentence_data = textTraining.make_text_into_sentences_with_part_of_speech(chosen_text)

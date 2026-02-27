@@ -1,5 +1,5 @@
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QComboBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QComboBox, QMessageBox
 from PySide6.QtCore import Qt
 import services.learn as textTraining
 
@@ -7,11 +7,12 @@ class StyleStructurePage(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.main_layout = QHBoxLayout()
-        self.main_layout.setAlignment(Qt.AlignCenter)
+        self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
         self.setLayout(self.main_layout)
 
         self.text_label = QLabel("on data manager page")
+        self.text_label.setAlignment(Qt.AlignCenter)
         self.main_layout.addWidget(self.text_label)
 
         self.first_text_box = QComboBox()
@@ -38,6 +39,10 @@ class StyleStructurePage(QWidget):
     def find_struct_and_style(self):
         first_text = self.first_text_box.currentData()
         second_text = self.second_text_box.currentData()
+
+        if not first_text or not second_text:
+            QMessageBox.warning(self, "popup", "Texts not choosen")
+            return
         print("from find_struct_and_style: ", first_text[:10])
         print("from find_struct_and_style: ", second_text[:10])
 
