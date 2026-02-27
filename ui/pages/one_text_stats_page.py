@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QComboBox, QScrollArea, QSizePolicy, QMessageBox
-
+from PySide6.QtCore import Qt
 import services.learn as textTraining
+
+from database.database import Database
 
 def _ratio(num: int, den: int) -> float:
     return (num / den) if den else 0.0
@@ -14,10 +16,12 @@ class OneTextStatsPage(QWidget):
         scroll.setWidgetResizable(True)
         content = QWidget()
         self.content_layout = QVBoxLayout(content)
+        self.content_layout.setAlignment(Qt.AlignTop)
         scroll.setWidget(content)
         main_layout.addWidget(scroll)
 
         self.choose_text_for_stats = QComboBox()
+        self.load_past_texts()
         self.content_layout.addWidget(self.choose_text_for_stats)
 
         self.make_graphs = QPushButton("Get Stats")
@@ -29,6 +33,12 @@ class OneTextStatsPage(QWidget):
 
     def set_text(self, text: tuple[str, str]):
         self.choose_text_for_stats.addItem(text[1], userData=text[0])
+
+    def load_past_texts(self):
+        past_text = Database.get_all_text()
+        if past_text:
+            for entry in past_text:
+                self.choose_text_for_stats.addItem(entry[1], userData=entry[2])
 
     def make_graph(self):
         self._ensure_canvas()

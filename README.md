@@ -16,9 +16,25 @@ StyloMind is an app that I made in order to help writers and Myself when Writing
 
 - Sqlite3: Used for the database
 
+## Each Page
+
+- Upload: Where user upload and manage thier texts
+
+- Style and Structure: Users compare texts to see how simular they are (Shown in a Percentage)
+
+- One text stats page: Where users can get the stats of one paper
+
+- Two Stats page: Where users can compare two papers and get stats
+
 ## Goals of App
 
 I hope the app gives the user feedback and stats about thier paper, making the user being able to get feedback.
+
+## Future Goals
+
+- Make a Website along with the desktop app
+
+- Polish Up comparision for AI Dectetion
 
 ## Requirements
 

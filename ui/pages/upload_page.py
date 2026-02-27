@@ -6,6 +6,10 @@ import os
 import pdfplumber
 from docx import Document
 
+# Database
+
+from database.database import Database
+
 class UploadPage(QWidget):
     send_text = Signal(list)
     
@@ -39,6 +43,7 @@ class UploadPage(QWidget):
                             pages.append(page.extract_text())
                         pages = " ".join(pages)
                         print(pages)
+                        Database.add_text(file_name, pages)
                         self.send_text.emit([pages, file_name])
                         
                         return
@@ -52,6 +57,7 @@ class UploadPage(QWidget):
 
                     # Join the list of strings with newline characters
                     print('\n'.join(fullText))
+                    Database.add_text(file_name, '\n'.join(fullText))
                     self.send_text.emit(['\n'.join(fullText), file_name])
                     
                     return
@@ -61,6 +67,7 @@ class UploadPage(QWidget):
                             with open(file_path, "r", encoding=encoding) as f:
                                 text = f.read()
                                 print(text)
+                                Database.add_text(file_name, text)
                                 self.send_text.emit([text, file_name])
                                 
                                 return
@@ -70,6 +77,7 @@ class UploadPage(QWidget):
                     with open(file_path, "r", encoding="utf-8", errors="replace") as f:
                         text = f.read()
                         print(text)
+                        Database.add_text(file_name, text)
                         self.send_text.emit([text, file_name])
                         
                         return

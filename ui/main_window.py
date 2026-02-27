@@ -11,6 +11,7 @@ from ui.pages.one_text_stats_page import OneTextStatsPage
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Stylo Mind")
         self.main_widget = QWidget()
         self.main_layout = QHBoxLayout()
         self.setCentralWidget(self.main_widget)
