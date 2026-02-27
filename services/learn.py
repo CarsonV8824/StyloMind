@@ -19,6 +19,14 @@ def read_text_file(path: str) -> str:
     with open(path, "r", encoding="utf-8", errors="replace") as f:
         return f.read()
 
+def get_title(text:str) -> str:
+    """get the title of the text"""
+    doc = NLP(text)
+    for sent in doc.sents:
+        for token in sent:
+            if token.is_title:
+                return token.text
+
 def make_text_into_sentences_with_part_of_speech(text: str) -> list[list[dict[str, Any]]]:
     """Return sentence-token data with POS/dependency plus style-relevant token features."""
     doc = NLP(text)
@@ -142,8 +150,8 @@ def style_similarity(text1: str, text2: str) -> float:
     return (0.6 * char_score) + (0.4 * marker_score)
 
 if __name__ == "__main__":
-    a = read_text_file("chat_gpt.txt")
-    b = read_text_file("copiolit.txt")
+    a = read_text_file("services/data/chat_gpt.txt")
+    b = read_text_file("services/data/copiolit.txt")
     structure_score = structure_similarity(a, b)
     style_score = style_similarity(a, b)
     print("Structure similarity:", structure_score, "=>", round(structure_score * 100, 2), "%")
