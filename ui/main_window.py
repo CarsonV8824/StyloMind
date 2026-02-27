@@ -8,6 +8,8 @@ from ui.pages.style_structure_page import StyleStructurePage
 
 from ui.pages.one_text_stats_page import OneTextStatsPage
 
+from ui.pages.two_text_stats_page import TwoTextStatsPage
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -29,11 +31,14 @@ class MainWindow(QMainWindow):
         self.data_manager_page = StyleStructurePage()
         self.stack.addWidget(self.data_manager_page)
 
-        self.stats_page = OneTextStatsPage()
-        self.stack.addWidget(self.stats_page)
+        self.one_stat_stats_page = OneTextStatsPage()
+        self.stack.addWidget(self.one_stat_stats_page)
+
+        self.two_stat_stats_page = TwoTextStatsPage()
+        self.stack.addWidget(self.two_stat_stats_page)
 
         # signals
 
         self.upload_page.send_text.connect(self.data_manager_page.set_text)
-        self.upload_page.send_text.connect(self.stats_page.set_text)
+        self.upload_page.send_text.connect(self.one_stat_stats_page.set_text)
         self.buttons.go_to_page.connect(self.stack.setCurrentIndex)

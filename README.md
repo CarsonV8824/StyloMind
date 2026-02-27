@@ -4,6 +4,10 @@
 
 StyloMind is an app that I made in order to help writers and Myself when Writing papers. First, You Import your paper on the upload page. The app can take .PDF, .TXT, and .DOCX files. Second, you then can compare your papers for simular structure and Style. I use machince learning which finds this percentage for me. Third, I have a stats page which gives you graphs of stats about your paper and stats comparing papers.
 
+## Preview
+
+![App Preview](assets/preview.png)
+
 ## Libarys Used
 
 - Spacy: Used for NLP

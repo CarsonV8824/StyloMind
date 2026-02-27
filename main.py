@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication, QLabel
-from PySide6.QtGui import Qt
+from PySide6.QtGui import Qt, QIcon
 
 from ui.main_window import MainWindow
 
@@ -26,8 +26,10 @@ def main():
     
     app = QApplication(sys.argv)
     load_stylesheet(app)
-    
+    app.setWindowIcon(QIcon(str(Path("assets/logo.png"))))
+
     window = MainWindow()
+    window.setWindowIcon(QIcon(str(Path("assets/logo.png"))))
     
     window.show()
 

@@ -1,50 +1,82 @@
 QMainWindow {
-    background-color: #ffffff;
+    background-color: #eef6fc;
 }
 
 QWidget {
-    background-color: #ffffff;
+    background-color: #eef6fc;
+    color: #15324f;
 }
 
 QWidget#button_container {
-    background-color: #ffffff;
-    border: 2px solid #444;
-    border-radius: 8px;
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #2f8fd8,
+        stop: 1 #1f6fbe
+    );
+    border: 1px solid #6ec8f3;
+    border-radius: 12px;
 }
 
 QPushButton {
-    background-color: #0077b6;
+    background-color: #1f6fbe;
+    color: #f6fbff;
+    border: 1px solid #4bb7ee;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 600;
 }
 
-QPushButton:hover{
-    background-color: #61c1f5;
+QPushButton:hover {
+    background-color: #2aa5dc;
+    border: 1px solid #27c8b9;
+}
+
+QPushButton:pressed {
+    background-color: #145ba6;
+    border: 1px solid #1f6fbe;
+}
+
+QPushButton#btn_container_btn {
+    background-color: #127bbf;
+    color: #f6fbff;
+    border: 1px solid #5ec5ee;
+    padding: 12px 16px;
+}
+
+QPushButton#btn_container_btn:hover {
+    background-color: #18a9ca;
+    border: 1px solid #72ca7f;
+}
+
+QPushButton#btn_container_btn:pressed {
+    background-color: #0f5fa4;
+    border: 1px solid #1d89c8;
 }
 
 QLabel {
     font-size: 14px;
-    color: #333333;
+    color: #184066;
 }
 
 QComboBox {
-    background-color: #0077b6;
-    color: #333333;
-    border: 2px solid #444;
-    border-radius: 6px;
-    padding: 5px;
-}
-
-QComboBox QAbstractItemView {
     background-color: #ffffff;
-    color: #333333;
-    selection-background-color: #61c1f5;
-    selection-color: #111111;
+    color: #184066;
+    border: 1px solid #7bc8ee;
+    border-radius: 6px;
+    padding: 6px;
 }
 
 QComboBox:hover {
-    border: 2px solid #61c1f5;
+    border: 1px solid #2aa5dc;
 }
 
 QComboBox::drop-down {
     border: none;
-    color:#333333
+}
+
+QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    color: #184066;
+    selection-background-color: #d4f2ea;
+    selection-color: #15324f;
 }
