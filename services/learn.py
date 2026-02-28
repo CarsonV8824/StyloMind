@@ -53,6 +53,7 @@ def make_text_into_sentences_with_part_of_speech(text: str) -> list[list[dict[st
                     "is_title": token.is_title,
                     "morph": str(token.morph),
                     "length": len(token.text),
+                    "1st_2nd_3rd":token.morph.get("Person")
                 }
             )
         list_of_sentences.append(sentence)
@@ -155,12 +156,18 @@ def style_similarity(text1: str, text2: str) -> float:
     return (0.6 * char_score) + (0.4 * marker_score)
 
 if __name__ == "__main__":
-    a = read_text_file("services/data/chat_gpt.txt")
-    b = read_text_file("services/data/copiolit.txt")
+    #a = read_text_file("services/data/chat_gpt.txt")
+    #b = read_text_file("services/data/copiolit.txt")
+    print([
+        word["pos"]
+        for sentence in make_text_into_sentences_with_part_of_speech("You are the best")
+        for word in sentence
+    ])
+    """
     structure_score = structure_similarity(a, b)
     style_score = style_similarity(a, b)
     print("Structure similarity:", structure_score, "=>", round(structure_score * 100, 2), "%")
-    print("Style similarity:", style_score, "=>", round(style_score * 100, 2), "%")
+    print("Style similarity:", style_score, "=>", round(style_score * 100, 2), "%")"""
 
 """from pathlib import Path
 import numpy as np

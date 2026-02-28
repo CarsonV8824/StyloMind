@@ -73,7 +73,10 @@ class OneTextStatsPage(QWidget):
         import seaborn as sns
 
         chosen_text = self.choose_text_for_stats.currentData()
-        self.figure.clear()
+        try:
+            self.figure.clear()
+        except AttributeError:
+            print("error clearing")
 
         if not chosen_text:
             QMessageBox.warning(self, "popup","No Text choosen")
@@ -99,6 +102,7 @@ class OneTextStatsPage(QWidget):
         flat_non_punct = []
         pos_counts = {"NOUN": 0, "VERB": 0, "ADJ": 0, "ADV": 0, "PRON": 0, "DET": 0}
         tense_counts = {"Past": 0, "Present": 0, "Other": 0}
+        pov_counts = {"1st":0, "2nd": 0, "3rd":0}
 
         for sentence in non_empty_sentences:
             total = len(sentence)
@@ -130,7 +134,12 @@ class OneTextStatsPage(QWidget):
                             tense_counts["Present"] += 1
                         else:
                             tense_counts["Other"] += 1
-
+                    match token["1st_2nd_3rd"]:
+                        case ["1"]: pov_counts["1st"] += 1
+                        case ["2"]: pov_counts["2nd"] += 1
+                        case ["3"]: pov_counts["3rd"] += 1
+                        case _:pass
+        print(pov_counts)
         word_lengths = [t["length"] for t in flat_non_punct]
         uppercase_ratio = _ratio(sum(1 for t in flat_non_punct if t["is_upper"]), len(flat_non_punct))
         title_ratio = _ratio(sum(1 for t in flat_non_punct if t["is_title"]), len(flat_non_punct))
@@ -146,7 +155,33 @@ class OneTextStatsPage(QWidget):
         passive_count = sum(passive_flags)
         active_count = len(passive_flags) - passive_count
 
-        axs = self.figure.subplots(4, 2)
+        pov_chunk_size = 20
+        pov_over_time = {"1st": [], "2nd": [], "3rd": []}
+
+        for i in range(0, len(non_empty_sentences), pov_chunk_size):
+            chunk = non_empty_sentences[i:i + pov_chunk_size]
+            chunk_counts = {"1st": 0, "2nd": 0, "3rd": 0}
+
+            for sentence in chunk:
+                for token in sentence:
+                    match token["1st_2nd_3rd"]:
+                        case ["1"]: chunk_counts["1st"] += 1
+                        case ["2"]: chunk_counts["2nd"] += 1
+                        case ["3"]: chunk_counts["3rd"] += 1
+                        case _: pass
+
+            total = sum(chunk_counts.values())
+            if total:
+                pov_over_time["1st"].append((chunk_counts["1st"] / total) * 100)
+                pov_over_time["2nd"].append((chunk_counts["2nd"] / total) * 100)
+                pov_over_time["3rd"].append((chunk_counts["3rd"] / total) * 100)
+            else:
+                pov_over_time["1st"].append(0)
+                pov_over_time["2nd"].append(0)
+                pov_over_time["3rd"].append(0)
+
+
+        axs = self.figure.subplots(5, 2)
 
         ax = axs[0, 0]
         sns.histplot(sentence_lengths, bins=12, kde=True, stat="count", ax=ax)
@@ -219,6 +254,34 @@ class OneTextStatsPage(QWidget):
         ax.set_ylabel("% for Caps / Count for Tense")
         ax.tick_params(axis="x", rotation=20)
 
+        ax = axs[4, 0]
+
+        values = [pov_counts.get("1st", 0), pov_counts.get("2nd", 0), pov_counts.get("3rd", 0)]
+        labels = ["1st", "2nd", "3rd"]
+
+        if sum(values) > 0:
+            ax.pie(values, labels=labels, autopct="%1.1f%%")
+        else:
+            ax.text(0.5, 0.5, "No POV data", ha="center", va="center")
+            ax.axis("off")
+
+        ax.set_title("POV Percentages")
+
+        ax = axs[4, 1]
+        chunk_x = np.arange(1, len(pov_over_time["1st"]) + 1)
+
+        if len(chunk_x):
+            ax.plot(chunk_x, pov_over_time["1st"], label="1st")
+            ax.plot(chunk_x, pov_over_time["2nd"], label="2nd")
+            ax.plot(chunk_x, pov_over_time["3rd"], label="3rd")
+            ax.set_xlabel(f"Chunk Index ({pov_chunk_size} sentences/chunk)")
+            ax.set_ylabel("POV Share (%)")
+            ax.legend()
+        else:
+            ax.text(0.5, 0.5, "No POV trend data", ha="center", va="center", transform=ax.transAxes)
+
+        ax.set_title("POV Over Time")
+
         self.canvas.draw()
 
         #gets passive sentences
@@ -227,10 +290,19 @@ class OneTextStatsPage(QWidget):
             " ".join(token["text"] for token in non_empty_sentences[i])
             for i in sentences_index
         ]
+        if self.passive_sentences:
+            self.open_passive_popup()
 
-        self.open_popup()
-        
-    def open_popup(self):
+        # get sentences with first or second person
+        self.first_second_person_sentences = [
+            " ".join(word["text"] for word in sentence)
+            for sentence in non_empty_sentences
+            if any(word["1st_2nd_3rd"] == ["1"] or word["1st_2nd_3rd"] == ["2"] for word in sentence)
+        ]
+        if self.first_second_person_sentences:
+            self.open_pronoun_popup()
+
+    def open_passive_popup(self):
         dialog = QDialog(self)
         dialog.setWindowTitle("Passive Sentences")
         dialog.resize(520, 360)
@@ -249,6 +321,43 @@ class OneTextStatsPage(QWidget):
         layout.addWidget(title_on_page)
 
         for sentence in self.passive_sentences:
+            text = QLabel(sentence)
+            text.setAlignment(Qt.AlignCenter)
+            text.setWordWrap(True)  
+            content_layout.addWidget(text)
+
+        scroll.setWidget(content)
+        layout.addWidget(scroll)
+
+        export_btn = QPushButton("Export Sentences")
+        export_btn.clicked.connect(self.export_passive_sentences)
+        layout.addWidget(export_btn)
+
+        ok_btn = QPushButton("OK")
+        ok_btn.clicked.connect(dialog.accept)
+        layout.addWidget(ok_btn)
+
+        dialog.exec()
+
+    def open_pronoun_popup(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("First or Second Person")
+        dialog.resize(520, 360)
+
+        layout = QVBoxLayout(dialog)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+
+        title_on_page = QLabel("Sentences Dected For having First or Second Person:")
+        title_on_page.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title_on_page)
+
+        for sentence in self.first_second_person_sentences:
             text = QLabel(sentence)
             text.setAlignment(Qt.AlignCenter)
             text.setWordWrap(True)  
