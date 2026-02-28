@@ -17,11 +17,6 @@ class ButtonContainer(QWidget):
         btn1.setObjectName("btn_container_btn")
         btn1.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)  
         btn1.setFixedWidth(btn1.height() // 2)
-        
-        btn2 = QPushButton("Style and Structure")
-        btn2.setObjectName("btn_container_btn")
-        btn2.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)  
-        btn2.setFixedWidth(btn2.height() // 2)
        
         btn3 = QPushButton("Stats for one Text")
         btn3.setObjectName("btn_container_btn")
@@ -34,11 +29,9 @@ class ButtonContainer(QWidget):
         btn4.setFixedWidth(btn4.height() // 2)
 
         btn1.clicked.connect(lambda: self.go_to_page.emit(0))
-        btn2.clicked.connect(lambda: self.go_to_page.emit(1))
-        btn3.clicked.connect(lambda: self.go_to_page.emit(2))
-        btn4.clicked.connect(lambda: self.go_to_page.emit(3))
+        btn3.clicked.connect(lambda: self.go_to_page.emit(1))
+        btn4.clicked.connect(lambda: self.go_to_page.emit(2))
 
         layout.addWidget(btn1)
-        layout.addWidget(btn2)
         layout.addWidget(btn3)
         layout.addWidget(btn4)

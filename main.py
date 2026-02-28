@@ -4,6 +4,8 @@ from PySide6.QtGui import Qt, QIcon
 
 from ui.main_window import MainWindow
 
+from database.database import Database
+
 from pathlib import Path
 import sys, os, json
 
@@ -34,6 +36,6 @@ def main():
     window.show()
 
     sys.exit(app.exec())
-
+    
 if __name__ == "__main__":
     main()
