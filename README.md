@@ -11,7 +11,7 @@ StyloMind lets you upload writing samples, store them locally, and analyze them 
 You can:
 - Compare two texts for **structure similarity** and **style similarity**
 - Generate a detailed **single-text writing dashboard**
-- Flag likely **passive voice** and **1st/2nd-person usage**
+- Flag likely **passive voice**, **1st/2nd-person usage**, and **Contraction usage**
 - Export flagged sentences for revision work
 
 ## Features

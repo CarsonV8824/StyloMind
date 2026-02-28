@@ -1,11 +1,49 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QComboBox, QScrollArea, QSizePolicy, QMessageBox, QDialog, QLabel, QFileDialog
 from PySide6.QtCore import Qt
 import services.learn as textTraining
+import re
 
 from database.database import Database
 
 def _ratio(num: int, den: int) -> float:
     return (num / den) if den else 0.0
+
+def _detokenize(tokens: list[dict]) -> str:
+    contraction_suffixes = {"n't", "'s", "'m", "'re", "'ve", "'ll", "'d"}
+    no_space_before = {".", ",", "!", "?", ";", ":", "%", ")", "]", "}"}
+    no_space_after = {"(", "[", "{"}
+    double_quote_tokens = {'"', "“", "”"}
+    text = ""
+    in_double_quote = False
+
+    for token in tokens:
+        piece: str = token["text"].strip()
+        if not piece:
+            continue
+
+        if not text:
+            text = piece
+        elif piece in double_quote_tokens:
+            if in_double_quote:
+                text += '"'
+                in_double_quote = False
+            else:
+                if text[-1] not in no_space_after:
+                    text += " "
+                text += '"'
+                in_double_quote = True
+        elif piece.startswith("'") or piece in contraction_suffixes:
+            text += piece
+        elif piece in no_space_before or re.fullmatch(r"[.,!?;:%)\]}]+", piece):
+            text += piece
+        elif text[-1] in no_space_after or (text[-1] == '"' and in_double_quote):
+            text += piece
+        else:
+            text += f" {piece}"
+
+    text = re.sub(r"\b([A-Za-z]+)\s+n\s*'\s*t\b", r"\1n't", text)
+    text = re.sub(r"\b([A-Za-z]+)\s*'\s*(nt|s|m|re|ve|ll|d)\b", r"\1'\2", text)
+    return text
 
 class OneTextStatsPage(QWidget):
     def __init__(self):
@@ -63,6 +101,13 @@ class OneTextStatsPage(QWidget):
         from matplotlib.figure import Figure
 
         self.figure = Figure(figsize=(15, 18), constrained_layout=True)
+
+        axs = self.figure.subplots(5, 2)
+        self.figure.suptitle("Dashboard", fontsize=18)
+
+        # add space between subplot title and plot area
+        for ax in axs.flat:
+            ax.set_title(ax.get_title(), pad=12)
         self.canvas = FigureCanvas(self.figure)
         self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.canvas.setMinimumSize(1400, 1800)
@@ -98,6 +143,7 @@ class OneTextStatsPage(QWidget):
         noun_ratio = []
         verb_ratio = []
         passive_flags = []
+        contraction_flags = []
 
         flat_non_punct = []
         pos_counts = {"NOUN": 0, "VERB": 0, "ADJ": 0, "ADV": 0, "PRON": 0, "DET": 0}
@@ -120,6 +166,14 @@ class OneTextStatsPage(QWidget):
             passive_flags.append(
                 any(t["dep"] in {"auxpass", "nsubjpass"} for t in sentence)
             )
+
+            contraction_suffixes = {"n't", "'s", "'m", "'re", "'ve", "'ll", "'d"}
+
+            contraction_flags.append(
+                any(t["text"] in contraction_suffixes for t in sentence)
+            )
+
+            print(contraction_flags)
 
             for token in sentence:
                 if not token["is_punct"]:
@@ -182,6 +236,8 @@ class OneTextStatsPage(QWidget):
 
 
         axs = self.figure.subplots(5, 2)
+        self.figure.suptitle(self.choose_text_for_stats.currentText().split(".")[0] + " text data", fontsize=18, y=0.995)
+        self.figure.subplots_adjust(top=0.93)
 
         ax = axs[0, 0]
         sns.histplot(sentence_lengths, bins=12, kde=True, stat="count", ax=ax)
@@ -287,7 +343,7 @@ class OneTextStatsPage(QWidget):
         #gets passive sentences
         sentences_index= [index for index, boolean in enumerate(passive_flags) if boolean]
         self.passive_sentences = [
-            " ".join(token["text"] for token in non_empty_sentences[i])
+            _detokenize(non_empty_sentences[i])
             for i in sentences_index
         ]
         if self.passive_sentences:
@@ -295,12 +351,22 @@ class OneTextStatsPage(QWidget):
 
         # get sentences with first or second person
         self.first_second_person_sentences = [
-            " ".join(word["text"] for word in sentence)
+            _detokenize(sentence)
             for sentence in non_empty_sentences
             if any(word["1st_2nd_3rd"] == ["1"] or word["1st_2nd_3rd"] == ["2"] for word in sentence)
         ]
         if self.first_second_person_sentences:
             self.open_pronoun_popup()
+
+        #gets sentences with contractions
+        sentences_with_contractions_index = [index for index, boolean in enumerate(contraction_flags) if boolean]
+        self.contraction_sentences = [
+            _detokenize(non_empty_sentences[i])
+            for i in sentences_with_contractions_index
+        ]
+        if self.contraction_sentences:
+            self.open_contactions_popup()
+
 
     def open_passive_popup(self):
         dialog = QDialog(self)
@@ -358,6 +424,43 @@ class OneTextStatsPage(QWidget):
         layout.addWidget(title_on_page)
 
         for sentence in self.first_second_person_sentences:
+            text = QLabel(sentence)
+            text.setAlignment(Qt.AlignCenter)
+            text.setWordWrap(True)  
+            content_layout.addWidget(text)
+
+        scroll.setWidget(content)
+        layout.addWidget(scroll)
+
+        export_btn = QPushButton("Export Sentences")
+        export_btn.clicked.connect(self.export_passive_sentences)
+        layout.addWidget(export_btn)
+
+        ok_btn = QPushButton("OK")
+        ok_btn.clicked.connect(dialog.accept)
+        layout.addWidget(ok_btn)
+
+        dialog.exec()
+
+    def open_contactions_popup(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Contractions")
+        dialog.resize(520, 360)
+
+        layout = QVBoxLayout(dialog)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+
+        title_on_page = QLabel("Sentences Dected For having Contractions:")
+        title_on_page.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title_on_page)
+
+        for sentence in self.contraction_sentences:
             text = QLabel(sentence)
             text.setAlignment(Qt.AlignCenter)
             text.setWordWrap(True)  
