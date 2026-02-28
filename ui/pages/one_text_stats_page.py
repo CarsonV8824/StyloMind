@@ -100,7 +100,7 @@ class OneTextStatsPage(QWidget):
         from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
         from matplotlib.figure import Figure
 
-        self.figure = Figure(figsize=(15, 18), constrained_layout=True)
+        self.figure = Figure(figsize=(15, 18))
 
         axs = self.figure.subplots(5, 2)
         self.figure.suptitle("Dashboard", fontsize=18)
@@ -236,8 +236,11 @@ class OneTextStatsPage(QWidget):
 
 
         axs = self.figure.subplots(5, 2)
-        self.figure.suptitle(self.choose_text_for_stats.currentText().split(".")[0] + " text data", fontsize=18, y=0.995)
-        self.figure.subplots_adjust(top=0.93)
+        self.figure.suptitle(
+            self.choose_text_for_stats.currentText().split(".")[0] + " text data",
+            fontsize=18,
+            y=0.985,
+        )
 
         ax = axs[0, 0]
         sns.histplot(sentence_lengths, bins=12, kde=True, stat="count", ax=ax)
@@ -337,6 +340,12 @@ class OneTextStatsPage(QWidget):
             ax.text(0.5, 0.5, "No POV trend data", ha="center", va="center", transform=ax.transAxes)
 
         ax.set_title("POV Over Time")
+
+        # Keep subplot titles from colliding with neighboring charts and reserve
+        # dedicated space for the dashboard super-title.
+        for ax in axs.flat:
+            ax.set_title(ax.get_title(), pad=12)
+        self.figure.tight_layout(rect=(0, 0, 1, 0.965), h_pad=2.0)
 
         self.canvas.draw()
 
