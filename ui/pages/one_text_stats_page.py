@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QComboBox, QScrollArea, QSizePolicy, QMessageBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QComboBox, QScrollArea, QSizePolicy, QMessageBox, QDialog, QLabel, QFileDialog
 from PySide6.QtCore import Qt
 import services.learn as textTraining
 
@@ -40,6 +40,12 @@ class OneTextStatsPage(QWidget):
             for entry in past_text:
                 self.choose_text_for_stats.addItem(entry[1], userData=entry[2])
 
+    def update_text(self, text: list[tuple[str, str]]):
+        self.choose_text_for_stats.clear()
+        if text:
+            for entry in text:
+                self.choose_text_for_stats.addItem(entry[1], userData=entry[2])
+
     def make_graph(self):
         self._ensure_canvas()
         self.plot_dashboard()
@@ -56,10 +62,10 @@ class OneTextStatsPage(QWidget):
         from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
         from matplotlib.figure import Figure
 
-        self.figure = Figure(figsize=(15, 18))
+        self.figure = Figure(figsize=(15, 18), constrained_layout=True)
         self.canvas = FigureCanvas(self.figure)
-        self.canvas.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.canvas.setMinimumSize(1200, 1700)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.canvas.setMinimumSize(1400, 1800)
         self.content_layout.addWidget(self.canvas)
 
     def plot_dashboard(self):
@@ -213,5 +219,65 @@ class OneTextStatsPage(QWidget):
         ax.set_ylabel("% for Caps / Count for Tense")
         ax.tick_params(axis="x", rotation=20)
 
-        self.figure.tight_layout()
         self.canvas.draw()
+
+        #gets passive sentences
+        sentences_index= [index for index, boolean in enumerate(passive_flags) if boolean]
+        self.passive_sentences = [
+            " ".join(token["text"] for token in non_empty_sentences[i])
+            for i in sentences_index
+        ]
+
+        self.open_popup()
+        
+    def open_popup(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Passive Sentences")
+        dialog.resize(520, 360)
+
+        layout = QVBoxLayout(dialog)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+
+        title_on_page = QLabel("Sentences Dected as Being Passive:")
+        title_on_page.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title_on_page)
+
+        for sentence in self.passive_sentences:
+            text = QLabel(sentence)
+            text.setAlignment(Qt.AlignCenter)
+            text.setWordWrap(True)  
+            content_layout.addWidget(text)
+
+        scroll.setWidget(content)
+        layout.addWidget(scroll)
+
+        export_btn = QPushButton("Export Sentences")
+        export_btn.clicked.connect(self.export_passive_sentences)
+        layout.addWidget(export_btn)
+
+        ok_btn = QPushButton("OK")
+        ok_btn.clicked.connect(dialog.accept)
+        layout.addWidget(ok_btn)
+
+        dialog.exec()
+
+    def export_passive_sentences(self):
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save File",
+            "",
+            "Text Files (*.txt)"
+        )
+
+        if file_path:
+            if not file_path.endswith(".txt"):
+                file_path += ".txt"
+
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(" ".join(self.passive_sentences))

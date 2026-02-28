@@ -36,4 +36,7 @@ class MainWindow(QMainWindow):
 
         self.upload_page.send_text.connect(self.one_stat_stats_page.set_text)
         self.upload_page.send_text.connect(self.two_stat_stats_page.set_text)
+
+        self.upload_page.update_text.connect(self.one_stat_stats_page.update_text)
+        self.upload_page.update_text.connect(self.two_stat_stats_page.update_text)
         self.buttons.go_to_page.connect(self.stack.setCurrentIndex)

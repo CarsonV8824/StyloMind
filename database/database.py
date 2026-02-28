@@ -1,11 +1,39 @@
+import os
+import shutil
 import sqlite3
+from pathlib import Path
 
 
 type DbRow = tuple[int, str, str]
 
 class Database:
-    def __init__(self, filepath: str = "database/StyloMind.db"):
-        self.connection = sqlite3.connect(filepath)
+    @staticmethod
+    def _default_db_path() -> Path:
+        """Resolve a writable per-user DB path."""
+        env_override = os.environ.get("STYLOMIND_DB_PATH")
+        if env_override:
+            db_path = Path(env_override).expanduser()
+        else:
+            local_app_data = os.environ.get("LOCALAPPDATA")
+            if local_app_data:
+                db_path = Path(local_app_data) / "StyloMind" / "StyloMind.db"
+            else:
+                # Fallback for environments without LOCALAPPDATA.
+                db_path = Path.home() / "AppData" / "Local" / "StyloMind" / "StyloMind.db"
+
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # One-time migration from old repo-relative DB if present.
+        legacy_path = Path("database") / "StyloMind.db"
+        if legacy_path.exists() and not db_path.exists():
+            shutil.copy2(legacy_path, db_path)
+
+        return db_path
+
+    def __init__(self, filepath: str | None = None):
+        resolved_path = Path(filepath).expanduser() if filepath else self._default_db_path()
+        resolved_path.parent.mkdir(parents=True, exist_ok=True)
+        self.connection = sqlite3.connect(str(resolved_path))
         self.cursor = self.connection.cursor()
         self.__make_table()
 

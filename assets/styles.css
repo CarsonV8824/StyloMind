@@ -41,6 +41,7 @@ QPushButton#btn_container_btn {
     color: #f6fbff;
     border: 1px solid #5ec5ee;
     padding: 12px 16px;
+    font-weight: 600;
 }
 
 QPushButton#btn_container_btn:hover {
@@ -56,6 +57,7 @@ QPushButton#btn_container_btn:pressed {
 QLabel {
     font-size: 14px;
     color: #184066;
+    font-weight: 600;
 }
 
 QComboBox {
@@ -64,14 +66,17 @@ QComboBox {
     border: 1px solid #7bc8ee;
     border-radius: 6px;
     padding: 6px;
+    font-weight: 600;
 }
 
 QComboBox:hover {
     border: 1px solid #2aa5dc;
+    font-weight: 600;
 }
 
 QComboBox::drop-down {
     border: none;
+    font-weight: 600;
 }
 
 QComboBox QAbstractItemView {
@@ -79,4 +84,24 @@ QComboBox QAbstractItemView {
     color: #184066;
     selection-background-color: #d4f2ea;
     selection-color: #15324f;
+    font-weight: 600;
+}
+
+QListWidget {
+    background-color: #127bbf;
+    color: #f6fbff;
+    border: 1px solid #5ec5ee;
+    padding: 12px 16px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+QWidget#database_widget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #2f8fd8,
+        stop: 1 #1f6fbe
+    );
+    border: 1px solid #6ec8f3;
+    border-radius: 12px;
 }

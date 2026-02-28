@@ -50,6 +50,14 @@ class TwoTextStatsPage(QWidget):
         self.first_text.addItem(label, userData=content)
         self.second_text.addItem(label, userData=content)
 
+    def update_text(self, text: list[tuple[str, str]]):
+        self.first_text.clear()
+        self.second_text.clear()
+        if text:
+            for entry in text:
+                self.first_text.addItem(entry[1], userData=entry[2])
+                self.second_text.addItem(entry[1], userData=entry[2])
+
     def make_graph(self):
         if not self._ensure_canvas():
             return
@@ -63,10 +71,10 @@ class TwoTextStatsPage(QWidget):
         from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
         from matplotlib.figure import Figure
 
-        self.figure = Figure(figsize=(15, 18))
+        self.figure = Figure(figsize=(10, 6), constrained_layout=True)
         self.canvas = FigureCanvas(self.figure)
-        self.canvas.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.canvas.setMinimumSize(600, 850)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.canvas.setMinimumSize(900, 600)
         self.content_layout.addWidget(self.canvas)
         return True
 
@@ -119,5 +127,4 @@ class TwoTextStatsPage(QWidget):
 
         ax.set_ylim(0, 100)
 
-        self.figure.tight_layout()
         self.canvas.draw()
