@@ -60,20 +60,21 @@ def test_text(text: str) -> dict:
 
     final = {}
     sentences = re.split(r'(?<=[.!?])\s+', text)
+    print(sentences)
 
     for index, sentence in enumerate(sentences):
         if not sentence.strip():
             continue
 
-        styled = style_document(text) or ""
+        styled = style_document(sentence) or ""
         combined = (styled).strip()
 
         x = tfidf.transform([combined])  # <-- transform, not fit_transform
         result = model.predict(x)[0]     # <-- extract scalar
 
-        final[f"percentage of ai in sentence {index+1}"] = float(result)
+        final[f"percentage of ai in sentence {index+1}"] = f"{float(result) * 100:.2f}%"
 
     return final
 
 if __name__ == "__main__":
-    print(test_text("The silver fox wandered through the forgotten library, pausing to read the dust-covered spines of books that no one had touched in a century."))
+    print(test_text("The silver fox wandered through the forgotten library, pausing to read the dust-covered spines of books that no one had touched in a century. Nye uses a metaphor to show how people should have emphathy towards others."))
