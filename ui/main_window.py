@@ -8,6 +8,8 @@ from ui.pages.one_text_stats_page import OneTextStatsPage
 
 from ui.pages.two_text_stats_page import TwoTextStatsPage
 
+from ui.pages.ai_detection import AiDetectionPage
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -32,11 +34,16 @@ class MainWindow(QMainWindow):
         self.two_stat_stats_page = TwoTextStatsPage()
         self.stack.addWidget(self.two_stat_stats_page)
 
+        self.ai_dectetion_page =  AiDetectionPage()
+        self.stack.addWidget(self.ai_dectetion_page)
+
         # signals
 
         self.upload_page.send_text.connect(self.one_stat_stats_page.set_text)
         self.upload_page.send_text.connect(self.two_stat_stats_page.set_text)
+        self.upload_page.send_text.connect(self.ai_dectetion_page.set_text)
 
         self.upload_page.update_text.connect(self.one_stat_stats_page.update_text)
         self.upload_page.update_text.connect(self.two_stat_stats_page.update_text)
+        self.upload_page.update_text.connect(self.ai_dectetion_page.update_text)
         self.buttons.go_to_page.connect(self.stack.setCurrentIndex)

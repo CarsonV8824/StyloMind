@@ -1,5 +1,8 @@
 import pandas as pd
-from learn import style_document
+try:
+    from learn import style_document
+except ModuleNotFoundError:
+    from services.learn import style_document
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -50,10 +53,6 @@ def make_model() -> None:
     joblib.dump(model, "services/ML Stuff/ridge_model.pkl")
     joblib.dump(tfidf, "services/ML Stuff/tfidf_vectorizer.pkl")
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 def test_text_for_ai(text: str) -> dict:
     if not text:
         raise ValueError("Input text is required")
@@ -64,7 +63,7 @@ def test_text_for_ai(text: str) -> dict:
 
     final = {}
     sentences = re.split(r'(?<=[.!?])\s+', text)
-    print(sentences)
+    #print(sentences)
 
     for index, sentence in enumerate(sentences):
         if not sentence.strip():
@@ -76,13 +75,9 @@ def test_text_for_ai(text: str) -> dict:
         x = tfidf.transform([combined])  # <-- transform, not fit_transform
         result = model.predict(x)[0]     # <-- extract scalar
 
-        final[f"percentage of ai in sentence {index+1}"] = f"{float(result) * 100:.2f}%"
+        final[f"percentage of ai in sentence {index+1}"] = float(result)
 
     return final
 
 if __name__ == "__main__":
-<<<<<<< Updated upstream
     print(test_text_for_ai("A quiet breeze drifted through the open window, carrying the scent of spring into the room."))
-=======
-    print(test_text_for_ai("A quiet breeze drifted through the open window, carrying the scent of spring into the room."))
->>>>>>> Stashed changes
