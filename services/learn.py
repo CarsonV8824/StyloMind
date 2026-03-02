@@ -74,6 +74,7 @@ def _sentence_length_bucket(length: int) -> str:
     return "long"
 
 
+
 def structure_document(text: str) -> str:
     sents = make_text_into_sentences_with_part_of_speech(text)
     feats: list[str] = []
@@ -99,7 +100,6 @@ def structure_similarity(text1: str, text2: str) -> float:
     doc1 = structure_document(text1)
     doc2 = structure_document(text2)
     return _cosine_tfidf(doc1, doc2, analyzer="word", ngram_range=(1, 2))
-
 
 def style_document(text: str) -> str:
     sents = make_text_into_sentences_with_part_of_speech(text)
