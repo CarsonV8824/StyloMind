@@ -50,7 +50,10 @@ def make_model() -> None:
     joblib.dump(model, "services/ML Stuff/ridge_model.pkl")
     joblib.dump(tfidf, "services/ML Stuff/tfidf_vectorizer.pkl")
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 def test_text_for_ai(text: str) -> dict:
     if not text:
         raise ValueError("Input text is required")
@@ -78,4 +81,8 @@ def test_text_for_ai(text: str) -> dict:
     return final
 
 if __name__ == "__main__":
+<<<<<<< Updated upstream
     print(test_text_for_ai("A quiet breeze drifted through the open window, carrying the scent of spring into the room."))
+=======
+    print(test_text_for_ai("A quiet breeze drifted through the open window, carrying the scent of spring into the room."))
+>>>>>>> Stashed changes
