@@ -50,7 +50,7 @@ def make_model() -> None:
     joblib.dump(model, "services/ML Stuff/ridge_model.pkl")
     joblib.dump(tfidf, "services/ML Stuff/tfidf_vectorizer.pkl")
 
-def test_text(text: str) -> dict:
+def test_text_for_ai(text: str) -> dict:
     if not text:
         raise ValueError("Input text is required")
 
@@ -77,4 +77,8 @@ def test_text(text: str) -> dict:
     return final
 
 if __name__ == "__main__":
+<<<<<<< Updated upstream
     print(test_text("The silver fox wandered through the forgotten library, pausing to read the dust-covered spines of books that no one had touched in a century. Nye uses a metaphor to show how people should have emphathy towards others."))
+=======
+    print(test_text_for_ai("A quiet breeze drifted through the open window, carrying the scent of spring into the room."))
+>>>>>>> Stashed changes

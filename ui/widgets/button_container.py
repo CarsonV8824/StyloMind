@@ -28,10 +28,17 @@ class ButtonContainer(QWidget):
         btn4.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding) 
         btn4.setFixedWidth(btn4.height() // 2)
 
+        btn5 = QPushButton("AI Detection")
+        btn5.setObjectName("btn_container_btn")
+        btn5.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding) 
+        btn5.setFixedWidth(btn4.height() // 2)
+
         btn1.clicked.connect(lambda: self.go_to_page.emit(0))
         btn3.clicked.connect(lambda: self.go_to_page.emit(1))
         btn4.clicked.connect(lambda: self.go_to_page.emit(2))
+        btn5.clicked.connect(lambda: self.go_to_page.emit(3))
 
         layout.addWidget(btn1)
         layout.addWidget(btn3)
         layout.addWidget(btn4)
+        layout.addWidget(btn5)
