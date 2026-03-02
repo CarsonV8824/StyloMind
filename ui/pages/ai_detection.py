@@ -58,6 +58,11 @@ class AiDetectionPage(QWidget):
         sum_list = np.mean([value for value in data.values()])
 
         ai_percent = round(sum_list, 2)
-        human_percent = 1 - ai_percent
+        human_percent = round(1 - ai_percent, 2)
         print(ai_percent, human_percent)
+
+        for sent, score in data.items():
+            if score == 1.0:
+                pass
+                #print(sent)
         

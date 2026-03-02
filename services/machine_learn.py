@@ -75,7 +75,7 @@ def test_text_for_ai(text: str) -> dict:
         x = tfidf.transform([combined])  # <-- transform, not fit_transform
         result = model.predict(x)[0]     # <-- extract scalar
 
-        final[f"percentage of ai in sentence {index+1}"] = float(result)
+        final[sentences[index]] = float(result)
 
     return final
 
