@@ -1,8 +1,8 @@
 import pandas as pd
 try:
-    from learn import style_document
+    from services.graph_NLP import style_document
 except ModuleNotFoundError:
-    from services.learn import style_document
+    from graph_NLP import style_document
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -12,12 +12,12 @@ import re
 import joblib
 #sentences = re.split(r'(?<=[.!?])\s+', text)
 def make_model() -> None:
-    df = pd.read_csv("services/ML Stuff/ai_vs_human_dataset.csv")
+    df = pd.read_csv("services/ML Stuff/balanced.csv")
 
     texts = df["text"].to_list()
-    labels = df["label"].to_list()
+    labels = df["generated"].to_list()
 
-    labels = [1 if label == "ai" else 0 for label in labels]
+    #labels = [1 if label == "ai" else 0 for label in labels]
     
     combined = zip(texts, labels)
 
@@ -46,5 +46,32 @@ def make_model() -> None:
     joblib.dump(model, "services/ML Stuff/ridge_model.pkl")
     joblib.dump(tfidf, "services/ML Stuff/tfidf_vectorizer.pkl")
 
+def test_text_for_ai(text: str) -> dict:
+    if not text:
+        raise ValueError("Input text is required")
+
+    # Load model + vectorizer
+    model: LogisticRegression = joblib.load("services/ML Stuff/ridge_model.pkl")
+    tfidf: TfidfVectorizer = joblib.load("services/ML Stuff/tfidf_vectorizer.pkl")
+
+    final = {}
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    #print(sentences)
+
+    for index, sentence in enumerate(sentences):
+        if not sentence.strip():
+            continue
+
+        styled = style_document(sentence) or ""
+        combined = (styled).strip()
+
+        x = tfidf.transform([combined])  # <-- transform, not fit_transform
+        result = model.predict(x)[0]     # <-- extract scalar
+
+        final[sentences[index]] = float(result)
+
+    return final
+
 if __name__ == "__main__":
     make_model()
+    print(test_text_for_ai("A quiet breeze drifted through the open window, carrying the scent of spring into the room."))

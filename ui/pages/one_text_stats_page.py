@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QComboBox, QScrollArea, QSizePolicy, QMessageBox, QDialog, QLabel, QFileDialog
 from PySide6.QtCore import Qt
-import services.learn as textTraining
+import services.graph_NLP as textTraining
 import re
 
 from database.database import Database
