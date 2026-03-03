@@ -113,4 +113,4 @@ python -m spacy download en_core_web_sm
 
 ## License
 
-No license file is currently included in this repository.
+GNU Lesser General Public License (LGPL)
