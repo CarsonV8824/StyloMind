@@ -13,6 +13,7 @@ You can:
 - Generate a detailed **single-text writing dashboard**
 - Flag likely **passive voice**, **1st/2nd-person usage**, and **Contraction usage**
 - Export flagged sentences for revision work
+- Use an AI Detector (Not Accurate. I did this for learning purposes for ML)
 
 ## Features
 
@@ -22,6 +23,7 @@ You can:
 - Style similarity scoring using token features + character n-grams
 - Single-text analytics charts (sentence length, POS density, lexical diversity, POV trends, and more)
 - Two-text comparison chart with percentage similarity output
+- AI Detector (Not Accurate. I did this for learning purposes for ML)
 
 ## Tech Stack
 
